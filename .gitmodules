@@ -1,0 +1,3 @@
+[submodule "submodules/milsko"]
+	path = submodules/milsko
+	url = ssh://git@forgejo.nishi.boats:2222/pyrite-dev/milsko.git
