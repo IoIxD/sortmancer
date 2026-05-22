@@ -13,7 +13,6 @@ void GUI::dir_recurse(const std::string &path,
                         f->d_name + std::filesystem::path::preferred_separator,
                     cb);
       } else {
-        // printf(">%s\n", f->d_name);
         cb(path + f->d_name);
       }
     }
@@ -68,13 +67,11 @@ void GUI::start_scan(std::string dir) {
 
   this->scanThreads.push_back(new std::thread([=]() {
     this->dir_recurse(creationEntry.dir, [=](std::filesystem::path path) {
-      printf("%s\n", path.c_str());
       auto e = path.extension().string();
       std::transform(e.begin(), e.end(), e.begin(),
                      [](unsigned char c) { return std::tolower(c); });
       for (auto ext : avail_file_exts) {
         if (e == ext) {
-          printf(">%s\n", path.filename().c_str());
           this->modelContext->scan(path.string().c_str());
           std::string foundLabels = "";
 
