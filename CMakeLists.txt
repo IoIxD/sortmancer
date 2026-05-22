@@ -20,5 +20,8 @@ add_subdirectory(${MILSKO_DIR})
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_link_libraries(${PROJECT_NAME} spcf_rust Mw ${OPENSSL_LIBRARIES})
+if(UNIX)
+  target_link_libraries(${PROJECT_NAME} blkid)
+endif()
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${MILSKO_DIR}/include)
