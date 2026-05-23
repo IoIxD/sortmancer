@@ -81,7 +81,7 @@ void Device::mount(void (*successFunc)(void *, std::string),
   char cwd[PATH_MAX];
   memset(cwd, 0, PATH_MAX);
   getcwd(cwd, PATH_MAX);
-  snprintf(mountpoint, PATH_MAX, "%s/.spcf/%s/", cwd, mLabel);
+  snprintf(mountpoint, PATH_MAX, "%s/.sortmancer/%s/", cwd, mLabel);
   if (!std::filesystem::exists(mountpoint)) {
     std::filesystem::create_directories(mountpoint);
   }

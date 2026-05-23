@@ -1,8 +1,9 @@
 #include "gui.hpp"
 
 GUI::GUI() {
-  main_window = MwVaCreateWidget(MwWindowClass, "main", NULL, MwDEFAULT,
-                                 MwDEFAULT, 640, 480, MwNtitle, "SPCF", NULL);
+  main_window =
+      MwVaCreateWidget(MwWindowClass, "main", NULL, MwDEFAULT, MwDEFAULT, 640,
+                       480, MwNtitle, "Sortmancer", NULL);
 
   main_box = MwVaCreateWidget(MwBoxClass, "box", main_window, 0, 0, 640, 480,
                               MwNorientation, MwVERTICAL, MwNpadding, 16, NULL);

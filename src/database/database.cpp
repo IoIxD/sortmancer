@@ -6,20 +6,20 @@
 Database::Database() {
   char dir[2048];
 #ifdef __linux__
-  snprintf(dir, sizeof(dir), "%s/.spcf/", getenv("HOME"));
+  snprintf(dir, sizeof(dir), "%s/.sortmancer/", getenv("HOME"));
 #elif _WIN32
   /* TODO: I'm pretty sure this works? but it's untested.  */
-  snprintf(dir, sizeof(dir), "%s\\.spcf\\", getenv("HOMEPATH"));
+  snprintf(dir, sizeof(dir), "%s\\.sortmancer\\", getenv("HOMEPATH"));
 #else
 #error Unknown platform
 #endif
   std::filesystem::create_directories(dir);
 
-  std::filesystem::path path = std::filesystem::path(dir) / "spcf.db";
+  std::filesystem::path path = std::filesystem::path(dir) / "sortmancer.db";
   if (sqlite3_open(path.c_str(), &mDB) != SQLITE_OK) {
     char error[2048];
     memset(error, 0, sizeof(error));
-    snprintf(error, sizeof(error) - 1, "Error opening spcf.db: %s",
+    snprintf(error, sizeof(error) - 1, "Error opening sortmancer.db: %s",
              sqlite3_errmsg(mDB));
     printf("%s\n", error);
 #ifdef __linux__
@@ -85,19 +85,23 @@ void Database::new_entry(std::string table_name, std::string filename,
   memset(sql, 0, sizeof(sql));
   snprintf(sql, sizeof(sql) - 1,
            "INSERT INTO \"%s\" (filename, keywords, data) VALUES ("
-           "\"%s\", \"%s\", ?"
+           "\"%s\", \"%s\"%s"
            ");",
-           table_name.c_str(), filename.c_str(), keywords.c_str());
+           table_name.c_str(), filename.c_str(), keywords.c_str(),
+           data ? ", ?" : "");
 
   int err;
   if ((err = sqlite3_prepare_v2(mDB, sql, strlen(sql), &mStatement, &mTail)) !=
       SQLITE_OK) {
     goto err;
   };
-  err = sqlite3_bind_blob(mStatement, 1, data, data_len, SQLITE_TRANSIENT);
-  if (err != SQLITE_OK && err != SQLITE_DONE) {
-    goto err;
-  };
+
+  if (data) {
+    err = sqlite3_bind_blob(mStatement, 1, data, data_len, SQLITE_TRANSIENT);
+    if (err != SQLITE_OK && err != SQLITE_DONE) {
+      goto err;
+    };
+  }
 
   err = sqlite3_step(mStatement);
   if (err != SQLITE_OK && err != SQLITE_DONE) {
