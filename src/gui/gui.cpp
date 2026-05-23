@@ -42,7 +42,6 @@ static void MWAPI ok(MwWidget handle, void *user, void *call) {
 
 void GUI::window_tick(MwWidget widget, void *user, void *client) {
   GUI *self = (GUI *)user;
-  self->tickMutex.lock();
 
   bool didErrorCreate = false;
   bool didSBCCreate = false;
@@ -84,6 +83,7 @@ void GUI::window_tick(MwWidget widget, void *user, void *client) {
   if (didSBCCreate)
     self->scanBoxCreationQueue.erase(self->scanBoxCreationQueue.begin());
 
+  self->tickMutex.lock();
   for (auto sc : self->scanBoxEntryQueue) {
     int index = MwListBoxSet(self->scanLines[sc.idx].box, -1, 0, sc.line1);
     MwListBoxSet(self->scanLines[sc.idx].box, index, -1, sc.line2);
@@ -91,6 +91,7 @@ void GUI::window_tick(MwWidget widget, void *user, void *client) {
   }
   if (didSBECreate)
     self->scanBoxEntryQueue.erase(self->scanBoxEntryQueue.begin());
+  self->tickMutex.unlock();
 
   for (auto scan : self->scanStartQueue) {
     self->start_scan(scan.dir, scan.labelName);
@@ -98,6 +99,4 @@ void GUI::window_tick(MwWidget widget, void *user, void *client) {
   }
   if (didScanStartCreate)
     self->scanStartQueue.erase(self->scanStartQueue.begin());
-
-  self->tickMutex.unlock();
 }

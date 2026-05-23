@@ -15,8 +15,19 @@ struct ModelContext {
 #[unsafe(no_mangle)]
 unsafe extern "C" fn model_new(error_str: *mut c_char, error_str_len: usize) -> *mut ModelContext {
     match || -> Result<*mut ModelContext, Box<dyn std::error::Error>> {
-        let device = candle_examples::device(false)?;
-        if device.is_cpu() {
+        let no_cpu = std::env::var("SORTMANCER_CONVNEXT").is_ok();
+        let device = match candle_examples::device(false) {
+            Ok(device) => device,
+            Err(err) => {
+                if std::env::var("SORTMANCER_CONVNEXT").is_ok() {
+                    println!("Couldn't select GPU: {}", err.to_string());
+                    Device::Cpu
+                } else {
+                    return Err(Box::new(err));
+                }
+            }
+        };
+        if device.is_cpu() && !no_cpu {
             println!("using cpu model");
             let api = hf_hub::api::sync::Api::new()?;
             let api = api.model("lmz/candle-resnet".into());
@@ -34,12 +45,12 @@ unsafe extern "C" fn model_new(error_str: *mut c_char, error_str_len: usize) -> 
             println!("using gpu model");
             let api = hf_hub::api::sync::Api::new()?;
 
-            let api = api.model("timm/convnextv2_huge.fcmae_ft_in1k".into());
+            let api = api.model("timm/convnextv2_large.fcmae_ft_in1k".into());
             let filename = api.get("model.safetensors")?;
             let vb =
                 unsafe { VarBuilder::from_mmaped_safetensors(&[filename], DType::F32, &device)? };
 
-            let config = convnext::Config::huge();
+            let config = convnext::Config::large();
             let model = convnext::convnext(&config, 1000, vb)?;
 
             Ok(Box::leak(Box::new(ModelContext {
