@@ -115,7 +115,7 @@ unsafe extern "C" fn model_scan(
         prs.sort_by(|(_, p1), (_, p2)| p2.total_cmp(p1));
         let mut i = 0;
 
-        for &(category_idx, _pr) in prs.iter().take(250) {
+        for &(category_idx, _pr) in prs.iter().take(32) {
             let st = candle_examples::imagenet::CLASSES[category_idx];
             let error = st.to_string();
             let ptr = error.as_ptr() as *mut i8;
