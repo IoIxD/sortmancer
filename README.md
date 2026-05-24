@@ -11,4 +11,4 @@ Currently only supports on Linux, there is a hole left for Windows support and i
 - openssl/libcrypto
 - libblkid
 
-And uses [Milsko](https://forgejo.nishi.boats/pyrite-dev/milsko) but this is compiled alongside the program. 
+Any other dependencies this uses are statically linked.
