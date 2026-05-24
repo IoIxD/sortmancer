@@ -6,6 +6,43 @@ static void MWAPI ok(MwWidget handle, void *user, void *call) {
   MwDestroyWidget(MwGetParent(handle));
 }
 
+void GUI::MainWindow::search_btn(MwWidget handle, void *user_data,
+                                 void *call_data) {
+  GUI::MainWindow *self = (GUI::MainWindow *)user_data;
+
+  const char *text = MwGetText(self->search_box, MwNtext);
+
+  if (text) {
+    if (self->search_results_listbox) {
+      MwDestroyWidget(self->search_results_listbox);
+    }
+    int width = MwGetInteger(self->search_results_box, MwNwidth);
+    int height = MwGetInteger(self->search_results_box, MwNheight);
+
+    self->search_results_listbox =
+        MwCreateWidget(MwListBoxClass, "", self->search_results_box, 0, 0,
+                       width - 1, height - 1);
+    auto entries = self->gui->db.search(text, NULL, self);
+
+    MwListBoxSetWidth(self->search_results_listbox, 0, (width / 3));
+    MwListBoxSetWidth(self->search_results_listbox, 1, (width / 3));
+    MwListBoxSetWidth(self->search_results_listbox, 2, (width / 3));
+
+    int index = MwListBoxSet(self->search_results_listbox, -1, 0, "Location");
+    MwListBoxSet(self->search_results_listbox, index, -1, "Filename");
+    MwListBoxSet(self->search_results_listbox, index, -1, "Matched Keywords");
+
+    for (auto entry : entries) {
+      int index = MwListBoxSet(self->search_results_listbox, -1, 0,
+                               entry.table_name.c_str());
+      index = MwListBoxSet(self->search_results_listbox, index, -1,
+                           entry.filename.c_str());
+      MwListBoxSet(self->search_results_listbox, index, -1,
+                   entry.keywords.c_str());
+    }
+  }
+};
+
 GUI::MainWindow::MainWindow(GUI *gui) : gui(gui) {
   main_window =
       MwVaCreateWidget(MwWindowClass, "main", NULL, MwDEFAULT, MwDEFAULT, 640,
@@ -31,10 +68,16 @@ GUI::MainWindow::MainWindow(GUI *gui) : gui(gui) {
   tab_view = MwVaCreateWidget(MwTabClass, "entry", main_box, 0, 0, 640, 16,
                               MwNratio, 16, NULL);
   search_results_box = MwTabAdd(tab_view, "Results");
+
+  /* TODO: these should be moved to be within GUI::MainWindow, but testing it
+   * properly would require doing *another* scan, even partially, and I don't
+   * want to fuck with this. */
   MwAddUserHandler(device_scan_button, MwNactivateHandler,
                    device_choose_button_handler, gui);
   MwAddUserHandler(main_window, MwNtickHandler, window_tick, gui);
+
   MwAddUserHandler(main_window, MwNresizeHandler, resize, this);
+  MwAddUserHandler(search_box_button, MwNactivateHandler, search_btn, this);
 }
 
 void GUI::MainWindow::resize(MwWidget handle, void *user_data,
@@ -50,7 +93,27 @@ void GUI::MainWindow::resize(MwWidget handle, void *user_data,
 
   MwVaApply(self->main_box, MwNx, 0, MwNy, 0, MwNwidth, w, MwNheight, h, NULL);
 
-  self->gui->doTabResize = true;
+  if (self->search_results_listbox) {
+    int width = MwGetInteger(self->search_results_box, MwNwidth);
+    int height = MwGetInteger(self->search_results_box, MwNheight);
+
+    MwVaApply(self->search_results_listbox, MwNwidth, width, MwNheight, height,
+              NULL);
+    MwListBoxSetWidth(self->search_results_listbox, 0, (width / 3));
+    MwListBoxSetWidth(self->search_results_listbox, 1, (width / 3));
+    MwListBoxSetWidth(self->search_results_listbox, 2, (width / 3));
+  }
+
+  for (auto sl : self->gui->scanLines) {
+    auto width = MwGetInteger(sl.tab, MwNwidth);
+    auto height = MwGetInteger(sl.tab, MwNheight);
+
+    MwVaApply(sl.box, MwNx, 0, MwNy, 0, MwNwidth, width, MwNheight, height,
+              NULL);
+    MwListBoxSetWidth(sl.tab, 0, (width / 2));
+    MwListBoxSetWidth(sl.tab, 1, (width / 2));
+    MwDispatchUserHandler(sl.box, MwNresizeHandler, sl.box);
+  };
 };
 
 void GUI::MainWindow::window_tick(MwWidget widget, void *user, void *client) {
@@ -112,17 +175,6 @@ void GUI::MainWindow::window_tick(MwWidget widget, void *user, void *client) {
   }
   if (didScanStartCreate)
     self->scanStartQueue.erase(self->scanStartQueue.begin());
-
-  if (self->doTabResize) {
-    for (auto sl : self->scanLines) {
-      auto w = MwGetInteger(sl.tab, MwNwidth);
-      auto h = MwGetInteger(sl.tab, MwNheight);
-
-      MwVaApply(sl.box, MwNx, 0, MwNy, 0, MwNwidth, w, MwNheight, h, NULL);
-      MwDispatchUserHandler(sl.box, MwNresizeHandler, sl.box);
-    };
-    self->doTabResize = false;
-  }
 }
 
 GUI::MainWindow::~MainWindow() {

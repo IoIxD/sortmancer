@@ -10,7 +10,6 @@
 #include <thread>
 
 class GUI {
-  Database mDB;
   /* Thread pool with <8 threads */
   BS::thread_pool<> mPool =
       BS::thread_pool<>((std::thread::hardware_concurrency() < 8)
@@ -18,6 +17,8 @@ class GUI {
                             : 8);
 
 public:
+  Database db;
+
   class MainWindow {
   public:
     GUI *gui;
@@ -31,11 +32,14 @@ public:
     MwWidget search_box_text = NULL;
     MwWidget search_box = NULL;
     MwWidget search_box_button = NULL;
+    MwWidget search_results_listbox = NULL;
+
     MwWidget device_scan_button_holder = NULL;
     MwWidget device_scan_button = NULL;
     MwWidget directory_chooser = NULL;
     static void resize(MwWidget handle, void *user_data, void *call_data);
     static void window_tick(MwWidget widget, void *user, void *client);
+    static void search_btn(MwWidget handle, void *user_data, void *call_data);
   };
   MainWindow *main_window;
 
@@ -45,7 +49,6 @@ public:
   MwWidget device_listbox = NULL;
   MwWidget device_window_browse = NULL;
 
-  bool doTabResize = false;
   ModelContext *modelContext = NULL;
 
   std::mutex stdoutMutex;

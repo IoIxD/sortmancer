@@ -48,7 +48,7 @@ void GUI::start_scan(std::string dir, std::string tblName) {
 
   printf("starting scan of %s\n", dir.c_str());
 
-  if (!mDB.create_table(tblName, onError, this)) {
+  if (!db.create_table(tblName, onError, this)) {
     return;
   };
 
@@ -90,7 +90,7 @@ void GUI::start_scan(std::string dir, std::string tblName) {
             // uint8_t *data = image_get_pixels(img);
             // size_t len = image_get_pixel_len(img);
 
-            mDB.new_entry(tblName, entry.line1, entry.line2, onError, this);
+            db.new_entry(tblName, entry.line1, entry.line2, onError, this);
 
             // image_free(img);
 

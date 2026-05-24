@@ -16,7 +16,7 @@ tracing-subscriber = "0.3.23"
 
 [lib]
 path = "./src/lib.rs"
-crate-type = ["cdylib"]
+crate-type = ["staticlib"]
 
 [features]
 cuda = ["candle-examples/cuda"]
