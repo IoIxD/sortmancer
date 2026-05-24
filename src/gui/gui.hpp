@@ -18,19 +18,25 @@ class GUI {
                             : 8);
 
 public:
-  MwWidget main_window = NULL;
-  MwWidget main_box = NULL;
-  MwWidget tab_view = NULL;
-  MwWidget search_results_box = NULL;
-  MwWidget search_box_holder = NULL;
-  MwWidget search_box_text = NULL;
-  MwWidget search_box = NULL;
-  MwWidget search_box_button = NULL;
-  MwWidget device_scan_button_holder = NULL;
-  MwWidget device_scan_button = NULL;
-  MwWidget directory_chooser = NULL;
-  MwWidget scan_button_holder = NULL;
-  MwWidget scan_button = NULL;
+  class MainWindow {
+  public:
+    MainWindow(GUI *gui);
+    ~MainWindow();
+    MwWidget main_window = NULL;
+    MwWidget main_box = NULL;
+    MwWidget tab_view = NULL;
+    MwWidget search_results_box = NULL;
+    MwWidget search_box_holder = NULL;
+    MwWidget search_box_text = NULL;
+    MwWidget search_box = NULL;
+    MwWidget search_box_button = NULL;
+    MwWidget device_scan_button_holder = NULL;
+    MwWidget device_scan_button = NULL;
+    MwWidget directory_chooser = NULL;
+    static void resize(MwWidget handle, void *user_data, void *call_data);
+    static void window_tick(MwWidget widget, void *user, void *client);
+  };
+  MainWindow *main_window;
 
   MwWidget device_window = NULL;
   MwWidget device_list = NULL;
@@ -41,8 +47,13 @@ public:
   bool showingScan = false;
   ModelContext *modelContext = NULL;
 
-  std::mutex tickMutex;
+  std::mutex stdoutMutex;
+
+  GUI();
+
   std::mutex errMutex;
+
+  std::mutex tickMutex;
   std::unordered_map<std::filesystem::path, char> scannedFiles;
   struct ScanCreationEntry {
     int idx;
@@ -70,21 +81,16 @@ public:
   std::vector<ScanCreationEntry> scanStartQueue;
   std::string scanDeviceName;
 
-  std::mutex stdoutMutex;
-
-  GUI();
-
-  void dir_recurse(const std::string &path,
-                   std::function<void(const std::filesystem::path &)> cb);
-
   void start_scan(std::string dir, std::string tbl);
 
   static void file_choose_button_handler(MwWidget widget, void *user,
                                          void *client);
   static void device_choose_button_handler(MwWidget widget, void *user,
                                            void *client);
-  static void window_tick(MwWidget widget, void *user, void *client);
 };
+
+void dir_recurse(const std::string &path,
+                 std::function<void(const std::filesystem::path &)> cb);
 
 static const std::string avail_file_exts[] = {
     ".apng", ".png",   ".avif", ".gif", ".jpg", ".jpeg",

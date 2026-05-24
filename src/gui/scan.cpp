@@ -2,8 +2,8 @@
 #include "gui.hpp"
 #include <algorithm>
 
-void GUI::dir_recurse(const std::string &path,
-                      std::function<void(const std::filesystem::path &)> cb) {
+void dir_recurse(const std::string &path,
+                 std::function<void(const std::filesystem::path &)> cb) {
   if (auto dir = opendir(path.c_str())) {
     while (auto f = readdir(dir)) {
       if (f->d_name[0] == '.')
@@ -54,7 +54,7 @@ void GUI::start_scan(std::string dir, std::string tblName) {
   };
 
   this->scanThreads.push_back(new std::thread([=]() {
-    this->dir_recurse(creationEntry.dir, [=](std::filesystem::path path) {
+    dir_recurse(creationEntry.dir, [=](std::filesystem::path path) {
       auto e = path.extension().string();
       std::transform(e.begin(), e.end(), e.begin(),
                      [](unsigned char c) { return std::tolower(c); });

@@ -9,5 +9,5 @@ int main() {
 
   GUI g;
 
-  MwLoop(g.main_window);
+  MwLoop(g.main_window->main_window);
 }

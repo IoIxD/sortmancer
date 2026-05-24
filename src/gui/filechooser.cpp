@@ -21,8 +21,8 @@ void GUI::file_choose_button_handler(MwWidget widget, void *user,
                                      void *client) {
   GUI *self = (GUI *)user;
 
-  self->directory_chooser =
-      MwDirectoryChooser(self->main_window, "Scan a Directory");
-  MwAddUserHandler(self->directory_chooser, MwNdirectoryChosenHandler,
-                   file_callback, self);
+  self->main_window->directory_chooser =
+      MwDirectoryChooser(self->main_window->main_window, "Scan a Directory");
+  MwAddUserHandler(self->main_window->directory_chooser,
+                   MwNdirectoryChosenHandler, file_callback, self);
 };

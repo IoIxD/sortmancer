@@ -43,7 +43,7 @@ void GUI::device_choose_button_handler(MwWidget widget, void *user,
       MwVaCreateWidget(MwWindowClass, "window", NULL, MwDEFAULT, MwDEFAULT, 320,
                        240, MwNtitle, "Select Device", NULL);
 
-  MwReparent(self->device_window, self->main_window);
+  MwReparent(self->device_window, self->main_window->main_window);
 
   auto admin = is_admin();
   if (!admin) {
