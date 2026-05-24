@@ -1,4 +1,5 @@
 #include "database.hpp"
+#include <algorithm>
 #include <csignal>
 #include <cstring>
 #include <filesystem>
@@ -144,6 +145,12 @@ Database::search(std::string search_str,
       err = sqlite3_step(mStatement);
     };
   }
+
+  std::sort(
+      entries.begin(), entries.end(),
+      [&](Database::DatabaseEntry const &a, Database::DatabaseEntry const &b) {
+        return a.keywords.find(search_str) < b.keywords.find(search_str);
+      });
 
   return entries;
 
