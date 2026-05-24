@@ -6,7 +6,7 @@ static void MWAPI ok(MwWidget handle, void *user, void *call) {
   MwDestroyWidget(MwGetParent(handle));
 }
 
-GUI::MainWindow::MainWindow(GUI *gui) {
+GUI::MainWindow::MainWindow(GUI *gui) : gui(gui) {
   main_window =
       MwVaCreateWidget(MwWindowClass, "main", NULL, MwDEFAULT, MwDEFAULT, 640,
                        480, MwNtitle, "Sortmancer", NULL);
@@ -49,6 +49,8 @@ void GUI::MainWindow::resize(MwWidget handle, void *user_data,
   h = MwGetInteger(handle, MwNheight);
 
   MwVaApply(self->main_box, MwNx, 0, MwNy, 0, MwNwidth, w, MwNheight, h, NULL);
+
+  self->gui->doTabResize = true;
 };
 
 void GUI::MainWindow::window_tick(MwWidget widget, void *user, void *client) {
@@ -65,7 +67,7 @@ void GUI::MainWindow::window_tick(MwWidget widget, void *user, void *client) {
                                MwMB_ICONERROR | MwMB_BUTTONOK);
     MwAddUserHandler(MwMessageBoxGetChild(mb, MwMB_BUTTONOK),
                      MwNactivateHandler, ok, mb);
-    MwReparent(mb, self->main_window);
+    MwReparent(mb, self->main_window->main_window);
     didErrorCreate = true;
   }
   self->errMutex.unlock();
@@ -110,6 +112,17 @@ void GUI::MainWindow::window_tick(MwWidget widget, void *user, void *client) {
   }
   if (didScanStartCreate)
     self->scanStartQueue.erase(self->scanStartQueue.begin());
+
+  if (self->doTabResize) {
+    for (auto sl : self->scanLines) {
+      auto w = MwGetInteger(sl.tab, MwNwidth);
+      auto h = MwGetInteger(sl.tab, MwNheight);
+
+      MwVaApply(sl.box, MwNx, 0, MwNy, 0, MwNwidth, w, MwNheight, h, NULL);
+      MwDispatchUserHandler(sl.box, MwNresizeHandler, sl.box);
+    };
+    self->doTabResize = false;
+  }
 }
 
 GUI::MainWindow::~MainWindow() {

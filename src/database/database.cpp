@@ -68,11 +68,8 @@ bool Database::create_table(std::string table_name,
   char path[2048];
   memset(path, 0, sizeof(path));
   snprintf(path, sizeof(path) - 1,
-           "CREATE TABLE IF NOT EXISTS \"%s\" ("
-           "id INTEGER PRIMARY KEY,"
-           "filename TEXT NOT NULL,"
-           "keywords TEXT NOT NULL"
-           ");",
+           "CREATE VIRTUAL TABLE IF NOT EXISTS \"%s\" USING fts5(filename, "
+           "keywords);",
            table_name.c_str());
 
   return this->statement(path, onError, ud);

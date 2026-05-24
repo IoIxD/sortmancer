@@ -20,6 +20,7 @@ class GUI {
 public:
   class MainWindow {
   public:
+    GUI *gui;
     MainWindow(GUI *gui);
     ~MainWindow();
     MwWidget main_window = NULL;
@@ -44,7 +45,7 @@ public:
   MwWidget device_listbox = NULL;
   MwWidget device_window_browse = NULL;
 
-  bool showingScan = false;
+  bool doTabResize = false;
   ModelContext *modelContext = NULL;
 
   std::mutex stdoutMutex;

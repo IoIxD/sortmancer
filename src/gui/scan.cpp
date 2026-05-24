@@ -39,7 +39,6 @@ void GUI::start_scan(std::string dir, std::string tblName) {
     }
   }
   GUI::ScanCreationEntry creationEntry;
-  this->showingScan = true;
 
   int i = this->scanBoxEntryQueue.size();
   creationEntry.idx = i;
