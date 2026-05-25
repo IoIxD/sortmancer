@@ -15,9 +15,12 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Corrosion)
 
 if(ENABLE_CUDA)
-  corrosion_import_crate(MANIFEST_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Cargo.toml FEATURES cuda)
+  corrosion_import_crate(MANIFEST_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Cargo.toml
+  FEATURES cuda
+  CRATE_TYPES cdylib)
 else()
-  corrosion_import_crate(MANIFEST_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Cargo.toml)
+  corrosion_import_crate(MANIFEST_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Cargo.toml
+  CRATE_TYPES staticlib)
 endif()
 FILE(GLOB_RECURSE SOURCES src/*.cpp src/*.c)
 
@@ -32,7 +35,6 @@ target_link_libraries(${PROJECT_NAME} sortmancer_rust sqlite3 Mw ${OPENSSL_LIBRA
 if(ENABLE_CUDA)
   find_package(CUDAToolkit REQUIRED)
   target_link_directories(${PROJECT_NAME} PUBLIC /usr/local/cuda/lib64/)
-  target_link_libraries(${PROJECT_NAME} ${CUDAToolkit_LIBRARIES} cuda CUDA::cupti)
 endif()
 if(UNIX)
   find_package(DBus1 REQUIRED)

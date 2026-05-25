@@ -12,7 +12,7 @@ hf-hub = "0.5.0"
 
 [lib]
 path = "./src/lib.rs"
-crate-type = ["staticlib"]
+crate-type = ["cdylib", "staticlib"]
 
 [features]
 cuda = ["candle-examples/cuda"]

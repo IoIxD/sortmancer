@@ -87,7 +87,6 @@ file_chooser_response_handler(DBusConnection *connection, DBusMessage *message,
       dbus_message_iter_recurse(&variant, &uris);
       dbus_message_iter_get_basic(&uris, &uri);
 
-      printf("%p\n", ctx->callback);
       ctx->callback(NULL, ctx->gui, (void *)uri);
       break;
     }
@@ -188,7 +187,6 @@ bool GUI::DBusContext::open_file(GUI *gui, MwUserHandler handler) {
   mHandlerContext.status = -1;
   mHandlerContext.callback = handler;
   mHandlerContext.gui = gui;
-  printf("%p\n", mHandlerContext.callback);
 
   dbus_connection_try_register_object_path(
       mConn, handle, &file_chooser_response_vtable, &mHandlerContext, &error);
