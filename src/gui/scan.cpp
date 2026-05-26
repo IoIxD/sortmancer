@@ -64,40 +64,40 @@ void GUI::start_scan(std::string dir, std::string tblName) {
             p = p.substr(strlen(creationEntry.dir));
           }
 
-          auto _ = mPool.submit_task([=]() {
-            stdoutMutex.lock();
-            printf(">%s\n", p.c_str());
-            stdoutMutex.unlock();
+          // auto _ = mPool.submit_task([=]() {
+          stdoutMutex.lock();
+          printf(">%s\n", p.c_str());
+          stdoutMutex.unlock();
 
-            this->modelContext->scan(path.string().c_str());
-            std::string foundLabels = "";
+          this->modelContext->scan(path.string().c_str());
+          std::string foundLabels = "";
 
-            for (int i = 0; i < 32; i++) {
-              char name[255] = {0};
-              memset(name, 0, 255);
-              this->modelContext->get_scanned_name(i, name);
-              foundLabels += name;
-              foundLabels += ", ";
-            }
-            GUI::ScanEntry entry = {
-                .idx = i,
-            };
-            snprintf(entry.line1, 255, "%s", p.c_str());
-            snprintf(entry.line2, 255, "%s", foundLabels.c_str());
+          for (int i = 0; i < 32; i++) {
+            char name[255] = {0};
+            memset(name, 0, 255);
+            this->modelContext->get_scanned_name(i, name);
+            foundLabels += name;
+            foundLabels += ", ";
+          }
+          GUI::ScanEntry entry = {
+              .idx = i,
+          };
+          snprintf(entry.line1, 255, "%s", p.c_str());
+          snprintf(entry.line2, 255, "%s", foundLabels.c_str());
 
-            // Image *img = image_get(path.string().c_str());
+          // Image *img = image_get(path.string().c_str());
 
-            // uint8_t *data = image_get_pixels(img);
-            // size_t len = image_get_pixel_len(img);
+          // uint8_t *data = image_get_pixels(img);
+          // size_t len = image_get_pixel_len(img);
 
-            db.new_entry(tblName, entry.line1, entry.line2, onError, this);
+          db.new_entry(tblName, entry.line1, entry.line2, onError, this);
 
-            // image_free(img);
+          // image_free(img);
 
-            this->tickMutex.lock();
-            this->scanBoxEntryQueue.push_back(entry);
-            this->tickMutex.unlock();
-          });
+          this->tickMutex.lock();
+          this->scanBoxEntryQueue.push_back(entry);
+          this->tickMutex.unlock();
+          // });
 
           break;
         };
