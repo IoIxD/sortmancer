@@ -90,7 +90,7 @@ file_chooser_response_handler(DBusConnection *connection, DBusMessage *message,
       std::string filename = uri;
       size_t idx;
       if ((idx = filename.find("file://")) != std::string::npos) {
-        filename.erase(idx, idx + 7);
+        filename = filename.erase(idx, idx + 7);
       }
       if ((idx = filename.find("://")) != std::string::npos) {
         ctx->onError(

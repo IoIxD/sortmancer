@@ -170,7 +170,12 @@ void GUI::MainWindow::window_tick(MwWidget widget, void *user, void *client) {
   self->tickMutex.unlock();
 
   for (auto scan : self->scanStartQueue) {
-    self->start_scan(scan.dir, scan.labelName);
+    int idx;
+    std::string dir = scan.dir;
+    if ((idx = dir.find("file://")) != std::string::npos) {
+      dir = dir.erase(idx, idx + 7);
+    }
+    self->start_scan(dir, scan.labelName);
     didScanStartCreate = true;
   }
   if (didScanStartCreate)
