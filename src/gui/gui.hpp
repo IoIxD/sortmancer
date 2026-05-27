@@ -75,6 +75,7 @@ public:
     MwWidget search_results_listbox = NULL;
 
     MwWidget device_scan_button_holder = NULL;
+    MwWidget device_scan_seperator = NULL;
     MwWidget device_scan_button = NULL;
     MwWidget directory_chooser = NULL;
     static void resize(MwWidget handle, void *user_data, void *call_data);

@@ -90,6 +90,22 @@ void Database::new_entry(std::string table_name, std::string filename,
   return;
 };
 
+bool Database::entry_exists(std::string table, std::string filename) {
+  int err;
+  std::string row_query = "SELECT COUNT(filename) FROM \"" + table +
+                          "\" WHERE filename MATCH \'\"" + filename + "\"\';";
+  if ((err = sqlite3_prepare_v2(mDB, row_query.c_str(), row_query.length(),
+                                &mStatement, &mTail)) != SQLITE_OK) {
+    printf("Error on %s: %s", table.c_str(), sqlite3_errmsg(mDB));
+    return false;
+  };
+  err = sqlite3_step(mStatement);
+
+  int count = (int)sqlite3_column_int(mStatement, 0);
+
+  return count >= 1;
+};
+
 std::vector<Database::DatabaseEntry>
 Database::search(std::string search_str,
                  void (*onError)(std::string err, void *ud), void *ud) {

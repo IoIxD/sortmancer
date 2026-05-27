@@ -53,9 +53,12 @@ GUI::MainWindow::MainWindow(GUI *gui) : gui(gui) {
                                        640, 16, MwNratio, 1, NULL);
   device_scan_button_holder = MwVaCreateWidget(
       MwBoxClass, "entry_box", main_box, 0, 0, 640, 16, MwNratio, 1, NULL);
+  device_scan_seperator =
+      MwVaCreateWidget(MwSeparatorClass, "entry", device_scan_button_holder, 0,
+                       0, 640, 16, MwNratio, 8, NULL);
   device_scan_button =
       MwVaCreateWidget(MwButtonClass, "entry", device_scan_button_holder, 0, 0,
-                       640, 16, MwNratio, 8, MwNtext, "Scan", NULL);
+                       640, 16, MwNratio, 1, MwNtext, "Scan", NULL);
 
   search_box_text =
       MwVaCreateWidget(MwLabelClass, "entry_text", search_box_holder, 0, 0, 1,

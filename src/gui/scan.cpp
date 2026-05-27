@@ -46,7 +46,7 @@ void GUI::start_scan(std::string dir, std::string tblName) {
 
   this->scanBoxCreationQueue.push_back(creationEntry);
 
-  printf("starting scan of %s\n", dir.c_str());
+  printf("starting scan of %s (%s)\n", dir.c_str(), tblName.c_str());
 
   if (!db.create_table(tblName, onError, this)) {
     return;
@@ -62,6 +62,10 @@ void GUI::start_scan(std::string dir, std::string tblName) {
           std::string p = path.string();
           if (path.string().find(creationEntry.dir) != std::string::npos) {
             p = p.substr(strlen(creationEntry.dir));
+          }
+
+          if (db.entry_exists(tblName, p.c_str())) {
+            continue;
           }
 
           // auto _ = mPool.submit_task([=]() {

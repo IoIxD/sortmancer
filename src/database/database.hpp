@@ -28,6 +28,7 @@ public:
   void new_entry(std::string tbl_name, std::string filename,
                  std::string keywords,
                  void (*onError)(std::string err, void *ud), void *ud);
+  bool entry_exists(std::string tbl_name, std::string filename);
 
   std::vector<DatabaseEntry> search(std::string search_str,
                                     void (*onError)(std::string err, void *ud),
