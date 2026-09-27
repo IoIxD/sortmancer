@@ -10,7 +10,7 @@ void GUI::MainWindow::search_btn(MwWidget handle, void *user_data,
                                  void *call_data) {
   GUI::MainWindow *self = (GUI::MainWindow *)user_data;
 
-  const char *text = MwGetText(self->search_box, MwNtext);
+  const char *text = MwGetString(self->search_box, MwNtext);
 
   if (text) {
     if (self->search_results_listbox) {
